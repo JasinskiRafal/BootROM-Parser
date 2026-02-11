@@ -2,6 +2,8 @@ use clap::Parser;
 use std::fs;
 use std::path::PathBuf;
 
+use crate::trace::Trace;
+
 mod parser;
 mod trace;
 
@@ -25,7 +27,9 @@ fn main() {
     let contents =
         fs::read_to_string(hex_dump_file.as_path()).expect("The file needs to be readable");
     let hex_values = parser::from_hex_dump_file(contents);
-    for (idx, value) in hex_values.iter().enumerate() {
-        println!("hex {} = 0x{:x}", idx, value);
+    let traces = Trace::from_parsed_hex_dump(&hex_values);
+
+    for trace in traces {
+        println!("{}", trace);
     }
 }
