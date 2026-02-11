@@ -1,38 +1,24 @@
 use std::fmt;
 
+use strum_macros;
+
 mod r#type;
 use r#type::Type;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, strum_macros::FromRepr, strum_macros::Display)]
+#[strum(serialize_all = "UPPERCASE")]
+#[repr(u32)]
 pub enum Level {
-    Info,
-    Warning,
-    Error,
-    Debug,
+    Info = 0,
+    Warning = 1,
+    Error = 2,
+    Debug = 3,
     Unknown,
 }
 
 impl From<u32> for Level {
     fn from(value: u32) -> Self {
-        match value {
-            0 => Self::Info,
-            1 => Self::Warning,
-            2 => Self::Error,
-            3 => Self::Debug,
-            _ => Self::Unknown,
-        }
-    }
-}
-
-impl fmt::Display for Level {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Level::Info => write!(f, "INFO"),
-            Level::Warning => write!(f, "WARN"),
-            Level::Error => write!(f, "ERROR"),
-            Level::Debug => write!(f, "DEBUG"),
-            Level::Unknown => write!(f, "UNKNOWN"),
-        }
+        Level::from_repr(value).unwrap_or(Level::Unknown)
     }
 }
 

@@ -1,25 +1,16 @@
-use std::fmt;
+use strum_macros;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, strum_macros::FromRepr, strum_macros::Display)]
+#[repr(u32)]
 pub enum Type {
-    BootCoreBootRomVersion,
+    #[strum(to_string = "BOOTCORE - Boot ROM version")]
+    BootCoreBootRomVersion = 0x155,
+    #[strum(to_string = "Unknown code!")]
     Unknown,
 }
 
 impl From<u32> for Type {
     fn from(value: u32) -> Self {
-        match value {
-            0x155 => Self::BootCoreBootRomVersion,
-            _ => Self::Unknown,
-        }
-    }
-}
-
-impl fmt::Display for Type {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Self::BootCoreBootRomVersion => write!(f, "BOOTCORE - Boot ROM version"),
-            _ => write!(f, "Unknown code!"),
-        }
+        Type::from_repr(value).unwrap_or(Type::Unknown)
     }
 }

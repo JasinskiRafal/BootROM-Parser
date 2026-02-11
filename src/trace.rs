@@ -70,5 +70,12 @@ mod test {
             let created_fmt = format!("{}", simple_trace);
             assert_eq!(correct_fmt, created_fmt);
         }
+
+        {
+            let simple_trace = Trace::new(0x10, 0x1234, 0x0, 0x155, None);
+            let correct_fmt = String::from("[INFO] 0x1234 - BOOTCORE - Boot ROM version");
+            let created_fmt = format!("{}", simple_trace);
+            assert_eq!(correct_fmt, created_fmt);
+        }
     }
 }

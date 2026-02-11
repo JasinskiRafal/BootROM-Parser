@@ -6,3 +6,4 @@ description = "Simple BootROM traces parser"
 
 [dependencies]
 clap = { version = "4.5.57", features = ["derive"] }
+strum_macros = "0.27.2"
