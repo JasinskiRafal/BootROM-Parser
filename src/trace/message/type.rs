@@ -1,5 +1,19 @@
+//! BootROM Message Type Definitions
+//!
+//! This module contains the comprehensive enumeration of all known STM32
+//! BootROM message types. Each message type is identified by a unique
+//! 32-bit code and has a human-readable description.
+
 use strum_macros;
 
+/// Enumeration of all known STM32 BootROM message types
+///
+/// This enum represents the complete set of BootROM trace message codes
+/// that have been identified and documented. Each variant corresponds to
+/// a specific event that can occur during the STM32 boot process.
+///
+/// The enum uses the `strum_macros` crate to provide automatic conversion
+/// from numeric codes and display formatting.
 #[derive(Debug, PartialEq, strum_macros::FromRepr, strum_macros::Display)]
 #[repr(u32)]
 pub enum Type {
@@ -468,6 +482,29 @@ pub enum Type {
 }
 
 impl From<u32> for Type {
+    /// Converts a numeric message code to a Type enum
+    ///
+    /// This implementation uses the `from_repr` method provided by
+    /// `strum_macros::FromRepr` to convert the numeric code to the
+    /// corresponding enum variant. If the code doesn't match any known
+    /// variant, it returns `Type::Unknown`.
+    ///
+    /// # Arguments
+    ///
+    /// * `value` - Numeric message code from the BootROM trace
+    ///
+    /// # Returns
+    ///
+    /// The corresponding Type enum variant, or Type::Unknown if the code
+    /// is not recognized.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let code = 0x00000155;
+    /// let message_type = Type::from(code);
+    /// // Returns Type::BootRomVer
+    /// ```
     fn from(value: u32) -> Self {
         Type::from_repr(value).unwrap_or(Type::Unknown)
     }
