@@ -477,8 +477,8 @@ pub enum Type {
     SdAssertion = 0x1200001F,
     #[strum(to_string = "INFHARDLIB AssertBlocking")]
     InfHardLibAssertBlocking = 0x2E000001,
-    #[strum(to_string = "Unknown code!")]
-    Unknown,
+    #[strum(to_string = "0x{0:08X} - Unknown code!")]
+    Unknown(u32),
 }
 
 impl From<u32> for Type {
@@ -506,7 +506,7 @@ impl From<u32> for Type {
     /// // Returns Type::BootRomVer
     /// ```
     fn from(value: u32) -> Self {
-        Type::from_repr(value).unwrap_or(Type::Unknown)
+        Type::from_repr(value).unwrap_or(Type::Unknown(value))
     }
 }
 
