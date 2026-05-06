@@ -40,31 +40,58 @@ cargo install --path .
 ### Basic Usage
 
 ```bash
-bootrom-parser <hex_dump_file>
+bootrom-parser <input_file>
 ```
 
-Where `<hex_dump_file>` is the path to your STM32 BootROM hex dump file.
+Where `<input_file>` is the path to your STM32 BootROM trace file. The file can be in either hex dump format (default) or hex value list format (with `-x` flag).
 
 ### Example
 
 ```bash
-# Parse a BootROM hex dump
+# Parse a BootROM hex dump (original format)
 bootrom-parser bootrom_trace.hex
+
+# Parse a hex value list file (new format)
+bootrom-parser -x hex_values.txt
 
 # Parse with verbose output (if supported)
 RUST_LOG=debug bootrom-parser bootrom_trace.hex
 ```
 
-### Input Format
+### Input Formats
 
-The parser expects hex dump files in the following format:
+The parser supports two input formats:
+
+#### Hex Dump Format (Default)
+
+This is the original format with space-separated hexadecimal bytes:
 
 ```
 00 BB DD FF 0C 00 00 00 0D 07 00 00 00 00 00 00 01 00 00 2A 00 BB DD FF 10 00 00 00 1E 07 00 00
 00 00 00 00 55 01 00 00 01 05 00 00 00 BB DD FF 10 00 00 00 2D 07 00 00 00 00 00 00 58 01 00 00
 ```
 
-Each line contains space-separated hexadecimal bytes. The parser automatically detects BootROM trace patterns and extracts meaningful messages.
+Each line contains space-separated hexadecimal bytes representing the memory dump.
+
+#### Hex Value List Format (Use `-x` flag)
+
+This is the new format with 32-bit hexadecimal values, one per line:
+
+```
+0xFFDDBB00
+0x0000000C
+0x00001234
+0x00000000
+0x00000155
+0xFFDDBB00
+0x00000010
+0x00005678
+0x00000002
+0x0000012C
+0xDEADBEEF
+```
+
+Each line contains a single 32-bit hexadecimal value. The `0x` prefix is optional. Empty lines are ignored.
 
 ## Output Format
 

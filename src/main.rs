@@ -18,14 +18,24 @@ mod trace;
 /// Defines the CLI arguments for the BootROM parser application.
 #[derive(Parser, Debug)]
 #[command(version)]
-#[command(about = "STM32 BootROM hex dump parser - Converts BootROM traces to human-readable format")]
+#[command(
+    about = "STM32 BootROM hex dump parser - Converts BootROM traces to human-readable format"
+)]
 #[command(author = "Rafal Jasinski")]
 struct Cli {
-    /// Path to the hex dump file containing BootROM traces
+    /// Path to the input file containing BootROM traces
     ///
-    /// The file should contain space-separated hexadecimal bytes representing
-    /// the memory dump from an STM32 microcontroller.
-    bootrom_hex_dump_file: PathBuf,
+    /// The file can be either:
+    /// - A hex dump file with space-separated bytes (default)
+    /// - A hex value list file with 32-bit hex values (use --hex-values flag)
+    input_file: PathBuf,
+
+    /// Treat input file as a list of 32-bit hex values (0x12345678 format)
+    ///
+    /// When enabled, the parser expects each line to contain a single 32-bit
+    /// hexadecimal value in the format 0x12345678 or 0xDEADBEEF.
+    #[arg(long, short = 'x')]
+    hex_values: bool,
 }
 
 /// Main entry point for the BootROM parser application
@@ -39,14 +49,14 @@ struct Cli {
 fn main() {
     let cli = Cli::parse();
 
-    let hex_dump_file = cli.bootrom_hex_dump_file.to_owned();
-    if !hex_dump_file.is_file() {
-        eprintln!("Error: Hex dump file does not exist!");
+    let input_file = cli.input_file.to_owned();
+    if !input_file.is_file() {
+        eprintln!("Error: Input file does not exist!");
         std::process::exit(1);
     }
 
-    // Read and parse the hex dump file into 32-bit word values
-    let contents = match fs::read_to_string(hex_dump_file.as_path()) {
+    // Read the input file
+    let contents = match fs::read_to_string(input_file.as_path()) {
         Ok(content) => content,
         Err(e) => {
             eprintln!("Error reading file: {}", e);
@@ -54,7 +64,12 @@ fn main() {
         }
     };
 
-    let hex_values = parser::from_hex_dump_file(contents);
+    // Parse the file based on the selected format
+    let hex_values = if cli.hex_values {
+        parser::from_hex_value_list(contents)
+    } else {
+        parser::from_hex_dump_file(contents)
+    };
     let traces = Trace::from_parsed_hex_dump(&hex_values);
 
     // Print summary if no traces found
